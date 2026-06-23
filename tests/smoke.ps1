@@ -5,8 +5,8 @@ param(
     [string]$AdminPassword = "Admin123!",
     [string]$FuncionarioMail = "func001@mundial2026.com",
     [string]$FuncionarioPassword = "Func123!",
-    [string]$DestinoMail = "seba.cuneo@ucu.edu.uy",
-    [string]$DestinoPassword = "Seba123!"
+    [string]$DestinoMail = "usuario.test@test.com",
+    [string]$DestinoPassword = "Test123!"
 )
 
 $ErrorActionPreference = "Stop"

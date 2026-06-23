@@ -59,7 +59,6 @@ SET nombre = EXCLUDED.nombre, pais = EXCLUDED.pais, grupo_mundial = EXCLUDED.gru
 INSERT INTO usuario (mail, doc_pais, doc_tipo, doc_nro, dir_pais, dir_ciudad, dir_calle, password_hash) VALUES
 ('admin.usa@mundial2026.com', 'USA', 'PASAPORTE', 'A1001', 'Estados Unidos', 'New York', 'Main St 100', crypt('Admin123!', gen_salt('bf'))),
 ('func001@mundial2026.com', 'USA', 'PASAPORTE', 'F1001', 'Estados Unidos', 'New Jersey', 'Gate Ave 10', crypt('Func123!', gen_salt('bf'))),
-('seba.cuneo@ucu.edu.uy', 'URY', 'CI', '50000001', 'Uruguay', 'Montevideo', 'Av. 18 de Julio 1824', crypt('Seba123!', gen_salt('bf'))),
 ('usuario.test@test.com', 'URY', 'CI', '50000002', 'Uruguay', 'Montevideo', 'Bulevar Artigas 1000', crypt('Test123!', gen_salt('bf')))
 ON CONFLICT (mail) DO UPDATE
 SET doc_pais = EXCLUDED.doc_pais,
@@ -73,7 +72,6 @@ SET doc_pais = EXCLUDED.doc_pais,
 INSERT INTO usuario_telefono (mail, telefono) VALUES
 ('admin.usa@mundial2026.com', '+12025550100'),
 ('func001@mundial2026.com', '+12025550101'),
-('seba.cuneo@ucu.edu.uy', '+59899111222'),
 ('usuario.test@test.com', '+59899333444')
 ON CONFLICT (mail, telefono) DO NOTHING;
 
@@ -93,7 +91,6 @@ INSERT INTO funcionario (mail, nro_legajo) VALUES
 ON CONFLICT (mail) DO UPDATE SET nro_legajo = EXCLUDED.nro_legajo;
 
 INSERT INTO usuario_general (mail, fecha_registro, estado_verif) VALUES
-('seba.cuneo@ucu.edu.uy', now(), 'verificado'),
 ('usuario.test@test.com', now(), 'verificado')
 ON CONFLICT (mail) DO UPDATE
 SET estado_verif = EXCLUDED.estado_verif;
@@ -139,11 +136,11 @@ WHERE es.id_evento IN (1, 2, 3)
 ON CONFLICT (mail_func, id_evento, id_sector, id_estadio) DO NOTHING;
 
 INSERT INTO venta (id_venta, mail_usuario, id_comision, fecha, estado, monto_total, comision_pct)
-SELECT 1, 'seba.cuneo@ucu.edu.uy', 1, now(), 'pagada', 198.00, 10.00
+SELECT 1, 'usuario.test@test.com', 1, now(), 'pagada', 198.00, 10.00
 WHERE NOT EXISTS (SELECT 1 FROM venta WHERE id_venta = 1);
 
 INSERT INTO entrada (id_entrada, id_venta, id_evento, id_sector, id_estadio, mail_propietario, estado, transferencias_rest)
-SELECT 1, 1, 1, 1, 1, 'seba.cuneo@ucu.edu.uy', 'disponible', 3
+SELECT 1, 1, 1, 1, 1, 'usuario.test@test.com', 'disponible', 3
 WHERE NOT EXISTS (SELECT 1 FROM entrada WHERE id_entrada = 1);
 
 SELECT setval(pg_get_serial_sequence('estadio', 'id_estadio'), COALESCE((SELECT MAX(id_estadio) FROM estadio), 1), TRUE);

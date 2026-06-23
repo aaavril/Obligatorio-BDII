@@ -68,12 +68,11 @@ Abrir `http://localhost:3000`.
 | --- | --- | --- |
 | Administrador | `admin.usa@mundial2026.com` | `Admin123!` |
 | Funcionario | `func001@mundial2026.com` | `Func123!` |
-| Usuario verificado | `seba.cuneo@ucu.edu.uy` | `Seba123!` |
 | Usuario verificado | `usuario.test@test.com` | `Test123!` |
 
 ## Flujo de demo
 
-1. Ingresar como `seba.cuneo@ucu.edu.uy`.
+1. Ingresar como `usuario.test@test.com`.
 2. Comprar entradas desde la home o abrir `/mis-entradas`.
 3. Expandir una entrada y verificar que el QR se regenere cada 29 segundos.
 4. Ingresar como funcionario y validar el hash en `/validar`.
