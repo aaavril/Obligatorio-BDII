@@ -116,7 +116,7 @@ $admin = Invoke-JsonApi POST "/auth/login" @{
 }
 Add-Result "Login admin" ($admin.roles -contains "administrador") "roles=$($admin.roles -join ',')"
 
-$overlapDate = ([DateTimeOffset]::Parse("$($detalle.evento.fecha_hora)Z")).AddHours(1).ToString("o")
+$overlapDate = ([DateTime]::SpecifyKind($detalle.evento.fecha_hora, [System.DateTimeKind]::Utc)).AddHours(1).ToString("o")
 $overlap = Invoke-JsonApiExpectFailure POST "/admin/eventos" @{
     idEstadio      = [int]$detalle.evento.id_estadio
     fechaHora      = $overlapDate
