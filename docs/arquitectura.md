@@ -152,9 +152,9 @@ Ejecutado antes de cada nueva entrada. Hace dos cosas:
 2. Incrementa `entradas_emitidas` en `evento_sector` solo si `entradas_emitidas < cupo_maximo`. Si el cupo esta lleno, lanza excepcion.
 
 ```
-INSERT INTO entrada → trigger → ¿usuario tiene < 5 entradas para este evento? → ¿hay cupo en el sector?
-                                        ↓ NO → ROLLBACK con error
-                                        ↓ SI → INSERT + UPDATE evento_sector
+INSERT INTO entrada → trigger → ¿usuario ya tiene >= 5 entradas para este evento? → SI → ROLLBACK con error
+                              → ¿hay cupo en el sector? → NO → ROLLBACK con error
+                              → INSERT + UPDATE evento_sector (maximo 5 por usuario por evento)
 ```
 
 #### `trg_check_evento_solapado` (BEFORE INSERT OR UPDATE ON evento)
