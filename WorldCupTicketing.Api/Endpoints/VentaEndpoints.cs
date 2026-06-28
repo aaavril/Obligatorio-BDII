@@ -68,6 +68,22 @@ public static class VentaEndpoints
                 return Results.BadRequest(new { error = "No hay comision vigente." });
             }
 
+            // Pre-check: enforce max 5 entries per user per event before any INSERT
+            var yaExistentes = await con.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM entrada WHERE mail_propietario = @Mail AND id_evento = @IdEvento AND estado <> 'cancelada'",
+                new { Mail = mail, request.IdEvento },
+                tx);
+
+            var cantidadSolicitada = request.Items.Sum(i => i.Cantidad);
+            if (yaExistentes + cantidadSolicitada > 5)
+            {
+                var restantes = 5 - yaExistentes;
+                var msg = restantes <= 0
+                    ? "Ya alcanzaste el limite de 5 entradas para este evento."
+                    : $"Solo podes comprar {restantes} entrada{(restantes == 1 ? "" : "s")} mas para este evento (ya tenes {yaExistentes}).";
+                return Results.BadRequest(new { error = msg });
+            }
+
             decimal subtotal = 0;
             foreach (var item in request.Items)
             {
