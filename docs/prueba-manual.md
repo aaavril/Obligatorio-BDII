@@ -29,7 +29,7 @@ Asegurate de que backend y frontend esten corriendo:
 4. Hacer click en **Comprar** sin estar logueado
 
 **Resultado esperado:** redirige a la pantalla de login.
-
+-> ANDA CORRECTAMENTE
 ---
 
 ## Prueba 2 — Comprar entradas
@@ -44,8 +44,7 @@ Asegurate de que backend y frontend esten corriendo:
 
 **Prueba negativa — limite de 5 entradas:**
 Repetir la compra hasta superar 5 entradas en el mismo evento. El backend debe rechazarla con un mensaje de error.
-
----
+--> ANDA CORRECTAMENTE
 
 ## Prueba 3 — Ver QR y esperar regeneracion
 
@@ -56,7 +55,7 @@ Repetir la compra hasta superar 5 entradas en el mismo evento. El backend debe r
 5. Esperar 30 segundos sin hacer nada
 
 **Resultado esperado:** el QR y el hash cambian solos cada ~29 segundos.
-
+---> ANDA CORRECTAMENTE
 ---
 
 ## Prueba 4 — Transferir una entrada
@@ -84,7 +83,10 @@ Para esta prueba necesitas un segundo usuario. Tenes dos opciones:
 6. En la seccion **Usuarios**, buscar `usuario.destino@test.com` y hacer click en **Verificar**
 7. Cerrar sesion y volver a entrar como `usuario.test@test.com` / `Test123!`
 
-**Opcion B — usar la cuenta de admin como destino (no recomendado, el admin no es usuario_general).**
+--> ANDA CORRECTAMENTE
+
+**Opcion B — usar la cuenta de admin como destino (no recomendado, el admin no es usuario_general).
+**
 
 **Flujo de transferencia:**
 1. Ir a http://localhost:3001/mis-entradas
@@ -99,6 +101,8 @@ Para esta prueba necesitas un segundo usuario. Tenes dos opciones:
 **Resultado esperado:** la entrada aparece ahora en las entradas del destinatario.
 
 **Prueba negativa:** intentar transferir una entrada a uno mismo — debe aparecer un mensaje de error.
+
+ANDA CORRECTAMENTE
 
 ---
 
@@ -124,6 +128,7 @@ Para esta prueba necesitas el hash del QR copiado en la Prueba 3 (debe ser recie
 Sin cambiar nada, hacer click en **Validar** de nuevo con el mismo hash.
 **Resultado esperado:** aparece un mensaje de error **"ERROR: QR inactivo."**
 
+--> ANDA CORRECAMTNE
 ---
 
 ## Prueba 6 — Panel de administrador
@@ -136,6 +141,7 @@ Sin cambiar nada, hacer click en **Validar** de nuevo con el mismo hash.
 - Seccion **Top compradores** — muestra usuarios por cantidad de entradas
 - Seccion **Usuarios** — lista de usuarios generales con boton **Verificar** para los pendientes
 
+--> Anda correctamente
 ---
 
 ## Prueba 7 — Crear evento y bloqueo por solapamiento
@@ -161,7 +167,7 @@ Por ejemplo, MetLife tiene un evento el 10/07/2026 a las 21:00 UTC (18:00 hora U
 Intentar crear otro en MetLife entre las 15:00 y las 21:00 hora Uruguay del mismo dia.
 
 **Resultado esperado:** error de solapamiento horario.
-
+--> ANDA CORRECTAMENTE
 ---
 
 ## Prueba 8 — Seguridad por roles
