@@ -11,7 +11,24 @@ public static class EventoEndpoints
         app.MapGet("/eventos/{id:int}", GetEvento).WithTags("Eventos");
         app.MapGet("/equipos", GetEquipos).WithTags("Catalogos");
         app.MapGet("/estadios", GetEstadios).WithTags("Catalogos");
+        app.MapGet("/comision/vigente", GetComisionVigente).WithTags("Catalogos");
         return app;
+    }
+
+    private static async Task<IResult> GetComisionVigente(DbConnectionFactory db)
+    {
+        await using var con = db.CreateConnection();
+        var comision = await con.QueryFirstOrDefaultAsync("""
+            SELECT porcentaje
+            FROM comision_historico
+            WHERE fecha_fin IS NULL
+            ORDER BY fecha_inicio DESC
+            LIMIT 1
+            """);
+
+        return comision is null
+            ? Results.NotFound(new { error = "No hay comision vigente." })
+            : Results.Ok(comision);
     }
 
     private static async Task<IResult> GetEventos(DbConnectionFactory db)

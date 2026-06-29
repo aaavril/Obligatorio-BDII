@@ -96,7 +96,7 @@ ON CONFLICT (mail) DO UPDATE
 SET estado_verif = EXCLUDED.estado_verif;
 
 INSERT INTO comision_historico (id_comision, porcentaje, fecha_inicio, fecha_fin) VALUES
-(1, 10.00, '2026-01-01 00:00:00+00', NULL)
+(1, 5.00, '2026-01-01 00:00:00+00', NULL)
 ON CONFLICT (id_comision) DO UPDATE
 SET porcentaje = EXCLUDED.porcentaje,
     fecha_inicio = EXCLUDED.fecha_inicio,

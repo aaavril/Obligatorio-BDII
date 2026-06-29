@@ -9,6 +9,7 @@
 **/.env
 **/.env.*.local
 !worldcup-frontend/.env.local
+**/appsettings.Development.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

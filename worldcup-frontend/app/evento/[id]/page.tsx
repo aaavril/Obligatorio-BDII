@@ -29,26 +29,41 @@ interface EventoDetalle {
   sectores: Sector[];
 }
 
+interface ConfirmacionCompra {
+  idVenta: number;
+  montoTotal: number;
+  cantidadEntradas: number;
+}
+
 export default function EventoPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
   const [detalle, setDetalle] = useState<EventoDetalle | null>(null);
   const [cantidades, setCantidades] = useState<Record<string, number>>({});
+  const [comisionPct, setComisionPct] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [confirmacion, setConfirmacion] = useState<ConfirmacionCompra | null>(null);
 
   useEffect(() => {
     apiFetch<EventoDetalle>(`/eventos/${params.id}`)
       .then(setDetalle)
       .catch((e) => setError(e instanceof Error ? e.message : "No se pudo cargar el evento."))
       .finally(() => setLoading(false));
+
+    apiFetch<{ porcentaje: number }>("/comision/vigente")
+      .then((c) => setComisionPct(Number(c.porcentaje)))
+      .catch(() => setComisionPct(null));
   }, [params.id]);
 
-  const total = useMemo(() => {
+  const subtotal = useMemo(() => {
     if (!detalle) return 0;
     return detalle.sectores.reduce((acc, sector) => acc + (cantidades[sector.id_sector] || 0) * Number(sector.costo_entrada), 0);
   }, [cantidades, detalle]);
+
+  const comisionMonto = comisionPct !== null ? subtotal * (comisionPct / 100) : 0;
+  const totalConComision = subtotal + comisionMonto;
 
   const comprar = async () => {
     const session = getSession();
@@ -71,12 +86,15 @@ export default function EventoPage() {
 
     setSaving(true);
     setError("");
+    setConfirmacion(null);
     try {
-      await apiFetch("/ventas", {
+      const cantidadEntradas = items.reduce((acc, item) => acc + (item?.cantidad ?? 0), 0);
+      const resultado = await apiFetch<{ idVenta: number; montoTotal: number }>("/ventas", {
         method: "POST",
         body: JSON.stringify({ idEvento: Number(params.id), items }),
       });
-      router.push("/mis-entradas");
+      setConfirmacion({ idVenta: resultado.idVenta, montoTotal: resultado.montoTotal, cantidadEntradas });
+      setCantidades({});
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo completar la compra.");
     } finally {
@@ -126,14 +144,43 @@ export default function EventoPage() {
 
         <aside className="panel h-fit">
           <h2 className="text-lg font-bold text-slate-950">Resumen</h2>
-          <p className="mt-2 text-sm text-slate-600">Subtotal sin comision</p>
-          <p className="text-3xl font-bold text-slate-950">{money(total)}</p>
-          <p className="mt-2 text-xs text-slate-500">La comision vigente se calcula en backend al confirmar.</p>
-          {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
-          <button type="button" onClick={comprar} disabled={saving} className="btn-primary mt-4 w-full">
-            <ShoppingCart className="h-4 w-4" aria-hidden />
-            {saving ? "Comprando..." : "Comprar"}
-          </button>
+
+          {confirmacion ? (
+            <div className="mt-3 grid gap-2 rounded-md border border-emerald-200 bg-emerald-50 p-3">
+              <p className="text-sm font-semibold text-emerald-800">Compra confirmada</p>
+              <p className="text-sm text-emerald-700">Venta #{confirmacion.idVenta} · {confirmacion.cantidadEntradas} entrada(s)</p>
+              <p className="text-2xl font-bold text-emerald-900">{money(confirmacion.montoTotal)}</p>
+              <p className="text-xs text-emerald-700">Total cobrado, comisión incluida.</p>
+              <div className="mt-1 flex gap-2">
+                <button type="button" onClick={() => router.push("/mis-entradas")} className="btn-primary flex-1">
+                  Ver mis entradas
+                </button>
+                <button type="button" onClick={() => router.push("/mis-compras")} className="btn-secondary flex-1">
+                  Ver mis compras
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="mt-2 grid gap-1 text-sm text-slate-600">
+                <div className="flex justify-between"><span>Subtotal</span><span>{money(subtotal)}</span></div>
+                <div className="flex justify-between">
+                  <span>Comision{comisionPct !== null ? ` (${comisionPct}%)` : ""}</span>
+                  <span>{comisionPct !== null ? money(comisionMonto) : "—"}</span>
+                </div>
+              </div>
+              <p className="mt-2 text-sm text-slate-600">Total a pagar</p>
+              <p className="text-3xl font-bold text-slate-950">{money(totalConComision)}</p>
+              {comisionPct === null && (
+                <p className="mt-2 text-xs text-slate-500">No se pudo obtener la comision vigente; el total final se confirma al comprar.</p>
+              )}
+              {error && <p className="mt-3 text-sm font-medium text-red-600">{error}</p>}
+              <button type="button" onClick={comprar} disabled={saving} className="btn-primary mt-4 w-full">
+                <ShoppingCart className="h-4 w-4" aria-hidden />
+                {saving ? "Comprando..." : "Comprar"}
+              </button>
+            </>
+          )}
         </aside>
       </section>
     </main>

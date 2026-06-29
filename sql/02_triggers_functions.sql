@@ -5,15 +5,17 @@ AS $$
 DECLARE
     v_total INT;
 BEGIN
+    -- Limite de 5 entradas POR TRANSACCION (misma venta), no acumulado en el tiempo
+    -- por usuario+evento. Asi lo exige la letra: "no podre comprar mas de 5 entradas
+    -- en la misma transaccion".
     SELECT COUNT(*)
     INTO v_total
     FROM entrada
-    WHERE mail_propietario = NEW.mail_propietario
-      AND id_evento = NEW.id_evento
+    WHERE id_venta = NEW.id_venta
       AND estado <> 'cancelada';
 
     IF v_total >= 5 THEN
-        RAISE EXCEPTION 'No se pueden comprar mas de 5 entradas por usuario para el mismo evento.';
+        RAISE EXCEPTION 'No se pueden comprar mas de 5 entradas en la misma transaccion.';
     END IF;
 
     UPDATE evento_sector
